@@ -130,6 +130,11 @@
 //#define TEMP_SENSOR_1_AS_REDUNDANT
 #define MAX_REDUNDANT_TEMP_SENSOR_DIFF 10
 
+//Check for thermistor temerature freefall during the print,
+//This usually indicates that the thermistor has been removed from the head.
+#define TEMP_SENSOR_DISCONNECT_CHECK 1
+#define TEMP_SENSOR_DISCONNECT_LIMIT 5
+ 
 // Actual temperature must be close to target for this long before M109 returns success
 #define TEMP_RESIDENCY_TIME 10  // (seconds)
 #define TEMP_HYSTERESIS 3       // (degC) range of +/- temperatures considered "close" to the target one

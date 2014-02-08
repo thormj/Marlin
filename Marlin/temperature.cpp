@@ -38,6 +38,7 @@
 //=============================public variables============================
 //===========================================================================
 int target_temperature[EXTRUDERS] = { 0 };
+float hot_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
@@ -505,6 +506,22 @@ void manage_heater()
         #endif
       }
     #endif
+    #ifdef TEMP_SENSOR_DISCONNECT_CHECK
+      if(current_temperature[e] > hot_temperature[e])
+         hot_temperature[e] = current_temperature[e];
+      if(hot_temperature[e] > target_temperature[e])
+         hot_temperature[e] = target_temperature[e];
+      if(hot_temperature[e] - current_temperature[e] > TEMP_SENSOR_DISCONNECT_LIMIT) {
+	disable_heater();
+	SERIAL_ERROR_START;
+	SERIAL_ERRORLNPGM("Extruder switched off. Temperature fell too much during print!");
+	LCD_ALERTMESSAGEPGM("Err: TEMP FALL ERROR");
+	#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+	  Stop();
+	#endif
+	hot_temperature[e]=0;
+     }
+   #endif 
   } // End extruder for loop
 
   #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
